@@ -16,14 +16,20 @@ const Notifications = () => {
     <MobileLayout companyName="Notifications">
       <div className="px-4 py-4 space-y-4">
         {/* Tab Selector */}
-        <TabSelector tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
+        <TabSelector
+          tabs={tabs}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+        />
 
         {/* Empty State */}
         <div className="flex flex-col items-center justify-center py-20 animate-fade-in">
           <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mb-4">
             <BellOff className="w-10 h-10 text-muted-foreground" />
           </div>
-          <h2 className="text-lg font-semibold text-foreground mb-2">No notifications yet</h2>
+          <h2 className="text-lg font-semibold text-foreground mb-2">
+            No notifications yet
+          </h2>
           <p className="text-sm text-muted-foreground text-center mb-6 max-w-[250px]">
             You'll see payment reminders, due invoices, and app updates here.
           </p>
