@@ -2,14 +2,20 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { Mail, Lock, Building2, Eye, EyeOff, ArrowRight } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 
+// 🔹 IMPORT YOUR LOGO HERE
+import AppLogo from "@/assets/logo.jpeg";
+
 const emailSchema = z.string().email("Please enter a valid email address");
-const passwordSchema = z.string().min(6, "Password must be at least 6 characters");
+const passwordSchema = z
+  .string()
+  .min(6, "Password must be at least 6 characters");
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -18,8 +24,10 @@ const Auth = () => {
   const [businessName, setBusinessName] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
-  
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>(
+    {}
+  );
+
   const { signIn, signUp, user, loading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -32,45 +40,36 @@ const Auth = () => {
 
   const validateForm = () => {
     const newErrors: { email?: string; password?: string } = {};
-    
+
     const emailResult = emailSchema.safeParse(email);
     if (!emailResult.success) {
       newErrors.email = emailResult.error.errors[0].message;
     }
-    
+
     const passwordResult = passwordSchema.safeParse(password);
     if (!passwordResult.success) {
       newErrors.password = passwordResult.error.errors[0].message;
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (!validateForm()) return;
-    
+
     setIsLoading(true);
-    
+
     try {
       if (isLogin) {
         const { error } = await signIn(email, password);
         if (error) {
-          if (error.message.includes("Invalid login credentials")) {
-            toast({
-              title: "Login failed",
-              description: "Invalid email or password. Please try again.",
-              variant: "destructive",
-            });
-          } else {
-            toast({
-              title: "Login failed",
-              description: error.message,
-              variant: "destructive",
-            });
-          }
+          toast({
+            title: "Login failed",
+            description: error.message,
+            variant: "destructive",
+          });
         } else {
           toast({
             title: "Welcome back!",
@@ -81,23 +80,15 @@ const Auth = () => {
       } else {
         const { error } = await signUp(email, password, businessName);
         if (error) {
-          if (error.message.includes("User already registered")) {
-            toast({
-              title: "Account exists",
-              description: "This email is already registered. Please login instead.",
-              variant: "destructive",
-            });
-          } else {
-            toast({
-              title: "Signup failed",
-              description: error.message,
-              variant: "destructive",
-            });
-          }
+          toast({
+            title: "Signup failed",
+            description: error.message,
+            variant: "destructive",
+          });
         } else {
           toast({
             title: "Account created!",
-            description: "Welcome to BillingUP. Let's set up your business.",
+            description: "Welcome to BillingUP 🎉",
           });
           navigate("/");
         }
@@ -109,49 +100,51 @@ const Auth = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      {/* Header */}
-      <div className="flex-shrink-0 pt-12 pb-8 px-6 text-center">
-        <div className="w-16 h-16 rounded-2xl bg-primary mx-auto flex items-center justify-center mb-4 shadow-glow animate-fade-in">
-          <span className="text-primary-foreground font-bold text-2xl">B</span>
+    <div className="min-h-screen flex flex-col bg-background">
+      {/* ================= HEADER WITH LOGO ================= */}
+      <div className="pt-12 pb-8 text-center">
+        <div className="flex justify-center mb-4">
+          <img
+            src={AppLogo}
+            alt="BillingUP Logo"
+            className="w-20 h-20 object-contain rounded-2xl shadow-md"
+          />
         </div>
-        <h1 className="text-2xl font-bold text-foreground animate-fade-in">BillingUP</h1>
-        <p className="text-muted-foreground text-sm mt-1 animate-fade-in">
+
+        <h1 className="text-2xl font-bold">BillingUP</h1>
+        <p className="text-sm text-muted-foreground mt-1">
           Smart billing for Indian businesses
         </p>
       </div>
 
-      {/* Form */}
-      <div className="flex-1 px-6 animate-slide-up">
-        <div className="bg-card rounded-3xl p-6 shadow-card max-w-md mx-auto">
+      {/* ================= FORM ================= */}
+      <div className="flex-1 px-6">
+        <div className="max-w-md mx-auto bg-card rounded-3xl p-6 shadow-lg">
+          {/* Tabs */}
           <div className="flex gap-2 p-1 bg-muted rounded-xl mb-6">
             <button
-              type="button"
               onClick={() => setIsLogin(true)}
-              className={`flex-1 py-2.5 text-sm font-medium rounded-lg transition-all ${
+              className={`flex-1 py-2 rounded-lg text-sm font-medium ${
                 isLogin
-                  ? "bg-card text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
+                  ? "bg-card shadow text-foreground"
+                  : "text-muted-foreground"
+              }`}>
               Login
             </button>
             <button
-              type="button"
               onClick={() => setIsLogin(false)}
-              className={`flex-1 py-2.5 text-sm font-medium rounded-lg transition-all ${
+              className={`flex-1 py-2 rounded-lg text-sm font-medium ${
                 !isLogin
-                  ? "bg-card text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
+                  ? "bg-card shadow text-foreground"
+                  : "text-muted-foreground"
+              }`}>
               Sign Up
             </button>
           </div>
@@ -159,13 +152,11 @@ const Auth = () => {
           <form onSubmit={handleSubmit} className="space-y-4">
             {!isLogin && (
               <div className="space-y-2">
-                <Label htmlFor="businessName" className="flex items-center gap-2">
-                  <Building2 className="w-4 h-4 text-muted-foreground" />
+                <Label className="flex items-center gap-2">
+                  <Building2 className="w-4 h-4" />
                   Business Name
                 </Label>
                 <Input
-                  id="businessName"
-                  type="text"
                   placeholder="Your Business Name"
                   value={businessName}
                   onChange={(e) => setBusinessName(e.target.value)}
@@ -175,84 +166,56 @@ const Auth = () => {
             )}
 
             <div className="space-y-2">
-              <Label htmlFor="email" className="flex items-center gap-2">
-                <Mail className="w-4 h-4 text-muted-foreground" />
+              <Label className="flex items-center gap-2">
+                <Mail className="w-4 h-4" />
                 Email Address
               </Label>
               <Input
-                id="email"
                 type="email"
                 placeholder="you@example.com"
                 value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  if (errors.email) setErrors({ ...errors, email: undefined });
-                }}
-                className={`h-12 ${errors.email ? "border-destructive" : ""}`}
+                onChange={(e) => setEmail(e.target.value)}
+                className="h-12"
               />
-              {errors.email && (
-                <p className="text-xs text-destructive">{errors.email}</p>
-              )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="flex items-center gap-2">
-                <Lock className="w-4 h-4 text-muted-foreground" />
+              <Label className="flex items-center gap-2">
+                <Lock className="w-4 h-4" />
                 Password
               </Label>
               <div className="relative">
                 <Input
-                  id="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
                   value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                    if (errors.password) setErrors({ ...errors, password: undefined });
-                  }}
-                  className={`h-12 pr-10 ${errors.password ? "border-destructive" : ""}`}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="h-12 pr-10"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  className="absolute right-3 top-1/2 -translate-y-1/2">
+                  {showPassword ? <EyeOff /> : <Eye />}
                 </button>
               </div>
-              {errors.password && (
-                <p className="text-xs text-destructive">{errors.password}</p>
-              )}
             </div>
 
-            <Button
-              type="submit"
-              size="lg"
-              className="w-full h-12 gap-2"
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <div className="w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
-              ) : (
-                <>
-                  {isLogin ? "Login" : "Create Account"}
-                  <ArrowRight className="w-5 h-5" />
-                </>
-              )}
+            <Button type="submit" className="w-full h-12 gap-2">
+              {isLogin ? "Login" : "Create Account"}
+              <ArrowRight className="w-5 h-5" />
             </Button>
           </form>
 
-          <p className="text-center text-xs text-muted-foreground mt-6">
-            By continuing, you agree to our Terms of Service and Privacy Policy
+          <p className="text-xs text-center text-muted-foreground mt-6">
+            By continuing, you agree to our Terms & Privacy Policy
           </p>
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="flex-shrink-0 py-6 text-center">
-        <p className="text-xs text-muted-foreground">
-          Made for Indian SMBs 🇮🇳
-        </p>
+      {/* ================= FOOTER ================= */}
+      <div className="py-6 text-center">
+        <p className="text-xs text-muted-foreground">Made for Indian SMBs 🇮🇳</p>
       </div>
     </div>
   );

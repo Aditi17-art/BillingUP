@@ -19,7 +19,7 @@ interface HeaderProps {
 export const Header = ({ companyName, showEdit = true }: HeaderProps) => {
   const { signOut, user } = useAuth();
   const { profile } = useProfile();
-  
+
   const displayName = profile?.business_name || companyName || "BillingUP";
 
   return (
@@ -37,7 +37,9 @@ export const Header = ({ companyName, showEdit = true }: HeaderProps) => {
             <DropdownMenuContent align="start" className="w-48">
               <div className="px-2 py-1.5">
                 <p className="text-sm font-medium truncate">{displayName}</p>
-                <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+                <p className="text-xs text-muted-foreground truncate">
+                  {user?.email}
+                </p>
               </div>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
@@ -47,7 +49,9 @@ export const Header = ({ companyName, showEdit = true }: HeaderProps) => {
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={signOut} className="text-destructive cursor-pointer">
+              <DropdownMenuItem
+                onClick={signOut}
+                className="text-destructive cursor-pointer">
                 <LogOut className="w-4 h-4 mr-2" />
                 Logout
               </DropdownMenuItem>
@@ -56,13 +60,15 @@ export const Header = ({ companyName, showEdit = true }: HeaderProps) => {
           <div className="flex items-center gap-1">
             <h1 className="font-semibold text-foreground">{displayName}</h1>
             {showEdit && (
-              <Link to="/profile" className="p-1 text-muted-foreground hover:text-primary transition-colors">
+              <Link
+                to="/profile"
+                className="p-1 text-muted-foreground hover:text-primary transition-colors">
                 <Pencil className="w-3 h-3" />
               </Link>
             )}
           </div>
         </div>
-        
+
         <div className="flex items-center gap-1">
           <Link to="/notifications">
             <Button variant="ghost" size="icon-sm" className="relative">
