@@ -4,6 +4,7 @@ import { QuickLinksCard } from "@/components/home/QuickLinksCard";
 import { TransactionCard, Transaction } from "@/components/home/TransactionCard";
 import { FloatingActionButton } from "@/components/home/FloatingActionButton";
 import { TabSelector } from "@/components/home/TabSelector";
+import { AddTransactionSheet } from "@/components/home/AddTransactionSheet";
 
 const tabs = [
   { id: "transactions", label: "Transaction Details" },
@@ -42,6 +43,7 @@ const sampleTransactions: Transaction[] = [
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("transactions");
+  const [showAddTransaction, setShowAddTransaction] = useState(false);
 
   return (
     <MobileLayout companyName="BillingUP">
@@ -50,7 +52,7 @@ const Index = () => {
         <TabSelector tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
 
         {/* Quick Links */}
-        <QuickLinksCard />
+        <QuickLinksCard onAddTransaction={() => setShowAddTransaction(true)} />
 
         {/* Section Title */}
         <div className="flex items-center justify-between">
@@ -70,7 +72,13 @@ const Index = () => {
       </div>
 
       {/* Floating Action Button */}
-      <FloatingActionButton />
+      <FloatingActionButton onClick={() => setShowAddTransaction(true)} />
+
+      {/* Add Transaction Sheet */}
+      <AddTransactionSheet 
+        open={showAddTransaction} 
+        onOpenChange={setShowAddTransaction} 
+      />
     </MobileLayout>
   );
 };
