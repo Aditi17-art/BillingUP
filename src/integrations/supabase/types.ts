@@ -14,6 +14,57 @@ export type Database = {
   }
   public: {
     Tables: {
+      items: {
+        Row: {
+          category: string | null
+          created_at: string
+          description: string | null
+          gst_rate: number | null
+          hsn_code: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          purchase_price: number | null
+          sale_price: number
+          stock_quantity: number
+          unit: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          gst_rate?: number | null
+          hsn_code?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          purchase_price?: number | null
+          sale_price?: number
+          stock_quantity?: number
+          unit?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          gst_rate?: number | null
+          hsn_code?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          purchase_price?: number | null
+          sale_price?: number
+          stock_quantity?: number
+          unit?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           address: string | null
