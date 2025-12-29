@@ -65,6 +65,54 @@ export type Database = {
         }
         Relationships: []
       }
+      parties: {
+        Row: {
+          address: string | null
+          created_at: string
+          current_balance: number | null
+          email: string | null
+          gstin: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          opening_balance: number | null
+          party_type: string | null
+          phone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string
+          current_balance?: number | null
+          email?: string | null
+          gstin?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          opening_balance?: number | null
+          party_type?: string | null
+          phone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          address?: string | null
+          created_at?: string
+          current_balance?: number | null
+          email?: string | null
+          gstin?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          opening_balance?: number | null
+          party_type?: string | null
+          phone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           address: string | null
@@ -104,6 +152,66 @@ export type Database = {
         }
         Relationships: []
       }
+      transactions: {
+        Row: {
+          created_at: string
+          discount_amount: number | null
+          id: string
+          items: Json | null
+          notes: string | null
+          party_name: string | null
+          party_phone: string | null
+          payment_mode: string | null
+          payment_status: Database["public"]["Enums"]["payment_status"] | null
+          subtotal: number
+          tax_amount: number | null
+          total_amount: number
+          transaction_date: string
+          transaction_number: string | null
+          transaction_type: Database["public"]["Enums"]["transaction_type"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          discount_amount?: number | null
+          id?: string
+          items?: Json | null
+          notes?: string | null
+          party_name?: string | null
+          party_phone?: string | null
+          payment_mode?: string | null
+          payment_status?: Database["public"]["Enums"]["payment_status"] | null
+          subtotal?: number
+          tax_amount?: number | null
+          total_amount?: number
+          transaction_date?: string
+          transaction_number?: string | null
+          transaction_type: Database["public"]["Enums"]["transaction_type"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          discount_amount?: number | null
+          id?: string
+          items?: Json | null
+          notes?: string | null
+          party_name?: string | null
+          party_phone?: string | null
+          payment_mode?: string | null
+          payment_status?: Database["public"]["Enums"]["payment_status"] | null
+          subtotal?: number
+          tax_amount?: number | null
+          total_amount?: number
+          transaction_date?: string
+          transaction_number?: string | null
+          transaction_type?: Database["public"]["Enums"]["transaction_type"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -112,7 +220,20 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      payment_status: "paid" | "unpaid" | "partial"
+      transaction_type:
+        | "sale_invoice"
+        | "payment_in"
+        | "sale_return"
+        | "delivery_challan"
+        | "estimate"
+        | "sale_order"
+        | "purchase"
+        | "payment_out"
+        | "purchase_return"
+        | "purchase_order"
+        | "expense"
+        | "p2p_transfer"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -239,6 +360,22 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      payment_status: ["paid", "unpaid", "partial"],
+      transaction_type: [
+        "sale_invoice",
+        "payment_in",
+        "sale_return",
+        "delivery_challan",
+        "estimate",
+        "sale_order",
+        "purchase",
+        "payment_out",
+        "purchase_return",
+        "purchase_order",
+        "expense",
+        "p2p_transfer",
+      ],
+    },
   },
 } as const
