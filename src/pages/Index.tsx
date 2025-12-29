@@ -5,6 +5,9 @@ import { TransactionCard, Transaction } from "@/components/home/TransactionCard"
 import { FloatingActionButton } from "@/components/home/FloatingActionButton";
 import { TabSelector } from "@/components/home/TabSelector";
 import { AddTransactionSheet } from "@/components/home/AddTransactionSheet";
+import { PartyQuickLinks } from "@/components/parties/PartyQuickLinks";
+import { PartyList } from "@/components/parties/PartyList";
+import { AddPartySheet } from "@/components/parties/AddPartySheet";
 
 const tabs = [
   { id: "transactions", label: "Transaction Details" },
@@ -44,6 +47,10 @@ const sampleTransactions: Transaction[] = [
 const Index = () => {
   const [activeTab, setActiveTab] = useState("transactions");
   const [showAddTransaction, setShowAddTransaction] = useState(false);
+  const [showAddParty, setShowAddParty] = useState(false);
+  const [selectedPartyId, setSelectedPartyId] = useState<string | undefined>();
+
+  const isPartiesTab = activeTab === "parties";
 
   return (
     <MobileLayout companyName="BillingUP">
@@ -51,33 +58,53 @@ const Index = () => {
         {/* Tab Selector */}
         <TabSelector tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
 
-        {/* Quick Links */}
-        <QuickLinksCard onAddTransaction={() => setShowAddTransaction(true)} />
+        {/* Quick Links - Different for each tab */}
+        {isPartiesTab ? (
+          <PartyQuickLinks />
+        ) : (
+          <QuickLinksCard onAddTransaction={() => setShowAddTransaction(true)} />
+        )}
 
         {/* Section Title */}
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-foreground">Recent Transactions</h2>
+          <h2 className="text-sm font-semibold text-foreground">
+            {isPartiesTab ? "Your Parties" : "Recent Transactions"}
+          </h2>
           <button className="text-xs text-primary font-medium">View All</button>
         </div>
 
-        {/* Transactions List */}
-        <div className="space-y-3 pb-16">
-          {sampleTransactions.map((transaction) => (
-            <TransactionCard
-              key={transaction.id}
-              transaction={transaction}
-            />
-          ))}
+        {/* Content based on active tab */}
+        <div className="pb-16">
+          {isPartiesTab ? (
+            <PartyList selectedPartyId={selectedPartyId} />
+          ) : (
+            <div className="space-y-3">
+              {sampleTransactions.map((transaction) => (
+                <TransactionCard
+                  key={transaction.id}
+                  transaction={transaction}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
       {/* Floating Action Button */}
-      <FloatingActionButton onClick={() => setShowAddTransaction(true)} />
+      <FloatingActionButton 
+        onClick={() => isPartiesTab ? setShowAddParty(true) : setShowAddTransaction(true)} 
+      />
 
       {/* Add Transaction Sheet */}
       <AddTransactionSheet 
         open={showAddTransaction} 
         onOpenChange={setShowAddTransaction} 
+      />
+
+      {/* Add Party Sheet */}
+      <AddPartySheet
+        open={showAddParty}
+        onOpenChange={setShowAddParty}
       />
     </MobileLayout>
   );
