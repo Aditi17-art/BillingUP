@@ -65,6 +65,54 @@ export type Database = {
         }
         Relationships: []
       }
+      parties: {
+        Row: {
+          address: string | null
+          created_at: string
+          current_balance: number | null
+          email: string | null
+          gstin: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          opening_balance: number | null
+          party_type: string | null
+          phone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string
+          current_balance?: number | null
+          email?: string | null
+          gstin?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          opening_balance?: number | null
+          party_type?: string | null
+          phone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          address?: string | null
+          created_at?: string
+          current_balance?: number | null
+          email?: string | null
+          gstin?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          opening_balance?: number | null
+          party_type?: string | null
+          phone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           address: string | null
