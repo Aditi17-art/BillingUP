@@ -37,15 +37,22 @@ const Dashboard = () => {
         {/* Sales Overview Card */}
         <div className="bg-card rounded-2xl p-5 shadow-card animate-fade-in">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold text-foreground">Monthly Sales Overview</h2>
-            <span className="text-xs text-muted-foreground">Oct - Dec 2024</span>
+            <h2 className="text-sm font-semibold text-foreground">
+              Monthly Sales Overview
+            </h2>
+            <span className="text-xs text-muted-foreground">
+              Oct - Dec 2024
+            </span>
           </div>
 
           {/* Chart */}
           <div className="h-40 mb-4">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={salesData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="hsl(var(--border))"
+                />
                 <XAxis
                   dataKey="month"
                   tick={{ fontSize: 12, fill: "hsl(var(--muted-foreground))" }}
@@ -57,7 +64,10 @@ const Dashboard = () => {
                   tickFormatter={(value) => formatCurrency(value)}
                 />
                 <Tooltip
-                  formatter={(value: number) => [formatCurrency(value), "Sales"]}
+                  formatter={(value: number) => [
+                    formatCurrency(value),
+                    "Sales",
+                  ]}
                   contentStyle={{
                     backgroundColor: "hsl(var(--card))",
                     border: "1px solid hsl(var(--border))",
@@ -98,10 +108,14 @@ const Dashboard = () => {
             <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
               <IndianRupee className="w-5 h-5 text-primary" />
             </div>
-            <p className="text-xs text-muted-foreground mb-1">Total Receivable</p>
+            <p className="text-xs text-muted-foreground mb-1">
+              Total Receivable
+            </p>
             <p className="text-lg font-bold text-foreground">₹1.5L</p>
           </div>
-          <div className="bg-card rounded-xl p-4 shadow-card animate-slide-up" style={{ animationDelay: "50ms" }}>
+          <div
+            className="bg-card rounded-xl p-4 shadow-card animate-slide-up"
+            style={{ animationDelay: "50ms" }}>
             <div className="w-10 h-10 rounded-lg bg-success/10 flex items-center justify-center mb-3">
               <TrendingUp className="w-5 h-5 text-success" />
             </div>
@@ -117,9 +131,12 @@ const Dashboard = () => {
               <ArrowUpRight className="w-5 h-5 text-primary-foreground" />
             </div>
             <div className="flex-1">
-              <h3 className="font-semibold text-foreground mb-1">Billing on BillingUP</h3>
+              <h3 className="font-semibold text-foreground mb-1">
+                Billing on BillingUP
+              </h3>
               <p className="text-xs text-muted-foreground mb-3">
-                Create professional GST invoices fast & easy. Share instantly via WhatsApp, Email or PDF.
+                Create professional GST invoices fast & easy. Share instantly
+                via WhatsApp, Email or PDF.
               </p>
               <Link to="/add-sale">
                 <Button size="sm" className="w-full">

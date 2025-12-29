@@ -19,7 +19,6 @@ export interface Transaction {
   date: string;
   invoiceNumber: string;
 }
-
 interface TransactionCardProps {
   transaction: Transaction;
   className?: string;

@@ -8,17 +8,15 @@ interface MobileLayoutProps {
   companyName?: string;
 }
 
-export const MobileLayout = ({ 
-  children, 
+export const MobileLayout = ({
+  children,
   showHeader = true,
-  companyName 
+  companyName,
 }: MobileLayoutProps) => {
   return (
     <div className="min-h-screen bg-background max-w-lg mx-auto relative">
       {showHeader && <Header companyName={companyName} />}
-      <main className="pb-20 scroll-smooth">
-        {children}
-      </main>
+      <main className="pb-20 scroll-smooth">{children}</main>
       <BottomNavigation />
     </div>
   );
