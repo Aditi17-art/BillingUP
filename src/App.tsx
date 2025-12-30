@@ -7,6 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Dashboard from "./pages/Dashboard";
+import PartyStatement from "./pages/PartyStatement";
 import Items from "./pages/Items";
 import Menu from "./pages/Menu";
 import Notifications from "./pages/Notifications";
@@ -35,6 +36,7 @@ const App = () => (
             <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><BusinessProfile /></ProtectedRoute>} />
             <Route path="/add-sale" element={<ProtectedRoute><AddSale /></ProtectedRoute>} />
+            <Route path="/parties/statement" element={<ProtectedRoute><PartyStatement /></ProtectedRoute>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
