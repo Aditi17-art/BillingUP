@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useParties, Party } from "@/hooks/useParties";
 import { PartyCard } from "./PartyCard";
 import { AddPartySheet } from "./AddPartySheet";
@@ -10,6 +11,7 @@ interface PartyListProps {
 }
 
 export const PartyList = ({ selectedPartyId }: PartyListProps) => {
+  const navigate = useNavigate();
   const { parties, isLoading, deleteParty } = useParties();
   const [editParty, setEditParty] = useState<Party | null>(null);
   const [showEditSheet, setShowEditSheet] = useState(false);
@@ -23,6 +25,10 @@ export const PartyList = ({ selectedPartyId }: PartyListProps) => {
     if (confirm("Are you sure you want to delete this party?")) {
       await deleteParty.mutateAsync(id);
     }
+  };
+
+  const handleViewStatement = (party: Party) => {
+    navigate(`/parties/statement?partyId=${party.id}`);
   };
 
   if (isLoading) {
@@ -55,6 +61,7 @@ export const PartyList = ({ selectedPartyId }: PartyListProps) => {
             isActive={party.id === selectedPartyId}
             onEdit={handleEdit}
             onDelete={handleDelete}
+            onViewStatement={handleViewStatement}
           />
         ))}
       </div>
