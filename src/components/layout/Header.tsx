@@ -1,6 +1,6 @@
-import { Bell, Settings, Pencil, LogOut } from "lucide-react";
+import { Bell, Settings, Pencil, LogOut, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
 import {
@@ -14,21 +14,30 @@ import {
 interface HeaderProps {
   companyName?: string;
   showEdit?: boolean;
+  showBackButton?: boolean;
 }
 
-export const Header = ({ companyName, showEdit = true }: HeaderProps) => {
+export const Header = ({ companyName, showEdit = true, showBackButton = false }: HeaderProps) => {
   const { signOut, user } = useAuth();
-  const { profile } = useProfile(); // ✅ FIXED
+  const { profile } = useProfile();
+  const navigate = useNavigate();
 
   const displayName = profile?.business_name || companyName || "BillingUP";
-
-  const logoUrl = profile?.logo_url; // change if field name is different
+  const logoUrl = profile?.logo_url;
 
   return (
     <header className="sticky top-0 z-40 bg-card/95 backdrop-blur-sm border-b border-border">
       <div className="flex items-center justify-between h-14 px-4 max-w-lg mx-auto">
         {/* LEFT */}
         <div className="flex items-center gap-2">
+          {showBackButton ? (
+            <button
+              onClick={() => navigate(-1)}
+              className="w-9 h-9 rounded-lg bg-accent flex items-center justify-center hover:bg-accent/80 transition-colors active:scale-95"
+            >
+              <ArrowLeft className="w-5 h-5 text-foreground" />
+            </button>
+          ) : (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center overflow-hidden">
@@ -73,13 +82,14 @@ export const Header = ({ companyName, showEdit = true }: HeaderProps) => {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+          )}
 
           <div className="flex items-center gap-1">
             <h1 className="font-semibold text-foreground truncate max-w-[160px]">
-              {displayName}
+              {showBackButton ? companyName : displayName}
             </h1>
 
-            {showEdit && (
+            {showEdit && !showBackButton && (
               <Link
                 to="/profile"
                 className="p-1 text-muted-foreground hover:text-primary">
