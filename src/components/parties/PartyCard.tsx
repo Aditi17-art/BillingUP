@@ -1,4 +1,4 @@
-import { Phone, MoreVertical } from "lucide-react";
+import { Phone, MoreVertical, Calculator } from "lucide-react";
 import { Party } from "@/hooks/useParties";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,6 +14,7 @@ interface PartyCardProps {
   onEdit?: (party: Party) => void;
   onDelete?: (id: string) => void;
   onViewStatement?: (party: Party) => void;
+  onAdjustBalance?: (party: Party) => void;
 }
 
 export const PartyCard = ({ 
@@ -21,7 +22,8 @@ export const PartyCard = ({
   isActive = false, 
   onEdit, 
   onDelete,
-  onViewStatement 
+  onViewStatement,
+  onAdjustBalance 
 }: PartyCardProps) => {
   const balanceColor = party.current_balance >= 0 ? "text-success" : "text-destructive";
   const balanceLabel = party.current_balance >= 0 ? "To Receive" : "To Pay";
@@ -79,6 +81,10 @@ export const PartyCard = ({
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={() => onViewStatement?.(party)}>
                 View Statement
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onAdjustBalance?.(party)}>
+                <Calculator className="w-4 h-4 mr-2" />
+                Adjust Balance
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => onEdit?.(party)}>
                 Edit Party
