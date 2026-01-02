@@ -35,6 +35,7 @@ export interface Transaction {
   transaction_type: TransactionType;
   transaction_number: string | null;
   transaction_date: string;
+  party_id: string | null;
   party_name: string | null;
   party_phone: string | null;
   subtotal: number;
@@ -53,6 +54,7 @@ export interface NewTransaction {
   transaction_type: TransactionType;
   transaction_number?: string;
   transaction_date?: string;
+  party_id?: string;
   party_name?: string;
   party_phone?: string;
   subtotal?: number;
@@ -101,6 +103,7 @@ export const useTransactions = () => {
           transaction_type: newTransaction.transaction_type,
           transaction_number: newTransaction.transaction_number,
           transaction_date: newTransaction.transaction_date,
+          party_id: newTransaction.party_id,
           party_name: newTransaction.party_name,
           party_phone: newTransaction.party_phone,
           subtotal: newTransaction.subtotal,
@@ -121,6 +124,7 @@ export const useTransactions = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions', user?.id] });
+      queryClient.invalidateQueries({ queryKey: ['parties', user?.id] });
       toast.success('Transaction added successfully');
     },
     onError: (error) => {
@@ -145,6 +149,7 @@ export const useTransactions = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions', user?.id] });
+      queryClient.invalidateQueries({ queryKey: ['parties', user?.id] });
       toast.success('Transaction updated successfully');
     },
     onError: (error) => {
@@ -163,6 +168,7 @@ export const useTransactions = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions', user?.id] });
+      queryClient.invalidateQueries({ queryKey: ['parties', user?.id] });
       toast.success('Transaction deleted successfully');
     },
     onError: (error) => {

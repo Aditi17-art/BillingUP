@@ -203,6 +203,7 @@ export type Database = {
           id: string
           items: Json | null
           notes: string | null
+          party_id: string | null
           party_name: string | null
           party_phone: string | null
           payment_mode: string | null
@@ -222,6 +223,7 @@ export type Database = {
           id?: string
           items?: Json | null
           notes?: string | null
+          party_id?: string | null
           party_name?: string | null
           party_phone?: string | null
           payment_mode?: string | null
@@ -241,6 +243,7 @@ export type Database = {
           id?: string
           items?: Json | null
           notes?: string | null
+          party_id?: string | null
           party_name?: string | null
           party_phone?: string | null
           payment_mode?: string | null
@@ -254,7 +257,15 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "transactions_party_id_fkey"
+            columns: ["party_id"]
+            isOneToOne: false
+            referencedRelation: "parties"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

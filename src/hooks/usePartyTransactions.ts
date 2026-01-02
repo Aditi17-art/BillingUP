@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Transaction, TransactionType } from "./useTransactions";
 
 export interface PartyTransactionFilters {
+  partyId?: string;
   partyName?: string;
   partyPhone?: string;
   startDate?: string;
@@ -31,12 +32,17 @@ export const usePartyTransactions = (filters: PartyTransactionFilters) => {
         .eq("user_id", user.id)
         .order("transaction_date", { ascending: false });
 
-      // Filter by party name or phone
-      if (filters.partyName) {
+      // Filter by party_id (preferred)
+      if (filters.partyId) {
+        query = query.eq("party_id", filters.partyId);
+      }
+
+      // Filter by party name or phone (fallback for legacy data)
+      if (filters.partyName && !filters.partyId) {
         query = query.ilike("party_name", `%${filters.partyName}%`);
       }
 
-      if (filters.partyPhone) {
+      if (filters.partyPhone && !filters.partyId) {
         query = query.eq("party_phone", filters.partyPhone);
       }
 
@@ -59,7 +65,7 @@ export const usePartyTransactions = (filters: PartyTransactionFilters) => {
       if (error) throw error;
       return (data || []).map(parseTransactionRecord);
     },
-    enabled: !!user && !!(filters.partyName || filters.partyPhone),
+    enabled: !!user && !!(filters.partyId || filters.partyName || filters.partyPhone),
   });
 };
 
