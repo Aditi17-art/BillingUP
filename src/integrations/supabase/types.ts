@@ -113,6 +113,50 @@ export type Database = {
         }
         Relationships: []
       }
+      party_balance_adjustments: {
+        Row: {
+          adjustment_amount: number
+          adjustment_type: string
+          created_at: string
+          id: string
+          new_balance: number
+          party_id: string
+          previous_balance: number
+          reason: string | null
+          user_id: string
+        }
+        Insert: {
+          adjustment_amount?: number
+          adjustment_type: string
+          created_at?: string
+          id?: string
+          new_balance?: number
+          party_id: string
+          previous_balance?: number
+          reason?: string | null
+          user_id: string
+        }
+        Update: {
+          adjustment_amount?: number
+          adjustment_type?: string
+          created_at?: string
+          id?: string
+          new_balance?: number
+          party_id?: string
+          previous_balance?: number
+          reason?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "party_balance_adjustments_party_id_fkey"
+            columns: ["party_id"]
+            isOneToOne: false
+            referencedRelation: "parties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           address: string | null

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useParties, Party } from "@/hooks/useParties";
 import { PartyCard } from "./PartyCard";
 import { AddPartySheet } from "./AddPartySheet";
+import { BalanceAdjustmentSheet } from "./BalanceAdjustmentSheet";
 import { PartySearchFilter, BalanceFilter } from "./PartySearchFilter";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Users } from "lucide-react";
@@ -16,6 +17,8 @@ export const PartyList = ({ selectedPartyId }: PartyListProps) => {
   const { parties, isLoading, deleteParty } = useParties();
   const [editParty, setEditParty] = useState<Party | null>(null);
   const [showEditSheet, setShowEditSheet] = useState(false);
+  const [adjustParty, setAdjustParty] = useState<Party | null>(null);
+  const [showAdjustSheet, setShowAdjustSheet] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [balanceFilter, setBalanceFilter] = useState<BalanceFilter>("all");
 
@@ -53,6 +56,11 @@ export const PartyList = ({ selectedPartyId }: PartyListProps) => {
 
   const handleViewStatement = (party: Party) => {
     navigate(`/parties/statement?partyId=${party.id}`);
+  };
+
+  const handleAdjustBalance = (party: Party) => {
+    setAdjustParty(party);
+    setShowAdjustSheet(true);
   };
 
   if (isLoading) {
@@ -96,6 +104,7 @@ export const PartyList = ({ selectedPartyId }: PartyListProps) => {
                 onEdit={handleEdit}
                 onDelete={handleDelete}
                 onViewStatement={handleViewStatement}
+                onAdjustBalance={handleAdjustBalance}
               />
             ))}
           </div>
@@ -106,6 +115,12 @@ export const PartyList = ({ selectedPartyId }: PartyListProps) => {
         open={showEditSheet}
         onOpenChange={setShowEditSheet}
         editParty={editParty}
+      />
+
+      <BalanceAdjustmentSheet
+        open={showAdjustSheet}
+        onOpenChange={setShowAdjustSheet}
+        party={adjustParty}
       />
     </>
   );
