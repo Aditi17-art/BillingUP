@@ -5,10 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, Search, Filter, Download, Calendar, TrendingUp, TrendingDown, Wallet } from "lucide-react";
+import { ArrowLeft, Search, Filter, Download, Calendar, TrendingUp, TrendingDown, Wallet, Scale } from "lucide-react";
 import { useParties } from "@/hooks/useParties";
 import { usePartyTransactions, calculatePartyTotals } from "@/hooks/usePartyTransactions";
-import { TransactionType } from "@/hooks/useTransactions";
+import { TransactionType, Transaction } from "@/hooks/useTransactions";
 import { format } from "date-fns";
 
 const transactionTypeLabels: Record<TransactionType, string> = {
@@ -43,14 +43,43 @@ const PartyStatement = () => {
   );
 
   const { data: transactions = [], isLoading: transactionsLoading } = usePartyTransactions({
-    partyName: selectedParty?.name,
-    partyPhone: selectedParty?.phone,
+    partyId: selectedPartyId || undefined,
     startDate: startDate || undefined,
     endDate: endDate || undefined,
     transactionType: transactionTypeFilter,
   });
 
   const totals = useMemo(() => calculatePartyTotals(transactions), [transactions]);
+
+  // Calculate running balance for each transaction (oldest to newest)
+  const transactionsWithBalance = useMemo(() => {
+    if (!selectedParty) return [];
+    
+    const openingBalance = selectedParty.opening_balance || 0;
+    
+    // Sort by date ascending for running balance calculation
+    const sorted = [...transactions].sort(
+      (a, b) => new Date(a.transaction_date).getTime() - new Date(b.transaction_date).getTime()
+    );
+    
+    let runningBalance = openingBalance;
+    const withBalance = sorted.map((t) => {
+      // Credits increase balance, debits decrease
+      const creditTypes = ["sale_invoice", "payment_in", "purchase_return"];
+      const isCredit = creditTypes.includes(t.transaction_type);
+      const balanceChange = isCredit ? t.total_amount : -t.total_amount;
+      runningBalance += balanceChange;
+      
+      return {
+        ...t,
+        runningBalance,
+        balanceChange,
+      };
+    });
+    
+    // Return in descending order (newest first) for display
+    return withBalance.reverse();
+  }, [transactions, selectedParty]);
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-IN", {
@@ -152,6 +181,36 @@ const PartyStatement = () => {
 
           {/* Summary Cards */}
           {selectedParty && (
+            <div className="grid grid-cols-2 gap-3">
+              <Card className="p-3 bg-muted/50 border-border">
+                <div className="flex items-center gap-1.5 text-muted-foreground mb-1">
+                  <Scale className="h-4 w-4" />
+                  <span className="text-xs font-medium">Opening Bal.</span>
+                </div>
+                <p className={`text-sm font-bold ${(selectedParty.opening_balance || 0) >= 0 ? "text-green-700" : "text-red-700"}`}>
+                  {formatCurrency(Math.abs(selectedParty.opening_balance || 0))}
+                  <span className="text-xs font-normal ml-1">
+                    {(selectedParty.opening_balance || 0) >= 0 ? "Rcv" : "Pay"}
+                  </span>
+                </p>
+              </Card>
+
+              <Card className="p-3 bg-primary/10 border-primary/20">
+                <div className="flex items-center gap-1.5 text-primary mb-1">
+                  <Wallet className="h-4 w-4" />
+                  <span className="text-xs font-medium">Current Bal.</span>
+                </div>
+                <p className={`text-sm font-bold ${(selectedParty.current_balance || 0) >= 0 ? "text-green-700" : "text-red-700"}`}>
+                  {formatCurrency(Math.abs(selectedParty.current_balance || 0))}
+                  <span className="text-xs font-normal ml-1">
+                    {(selectedParty.current_balance || 0) >= 0 ? "Rcv" : "Pay"}
+                  </span>
+                </p>
+              </Card>
+            </div>
+          )}
+
+          {selectedParty && (
             <div className="grid grid-cols-3 gap-3">
               <Card className="p-3 bg-green-50 border-green-200">
                 <div className="flex items-center gap-1.5 text-green-700 mb-1">
@@ -172,13 +231,10 @@ const PartyStatement = () => {
               <Card className="p-3 bg-blue-50 border-blue-200">
                 <div className="flex items-center gap-1.5 text-blue-700 mb-1">
                   <Wallet className="h-4 w-4" />
-                  <span className="text-xs font-medium">Balance</span>
+                  <span className="text-xs font-medium">Net Change</span>
                 </div>
                 <p className={`text-sm font-bold ${totals.balance >= 0 ? "text-green-800" : "text-red-800"}`}>
                   {formatCurrency(Math.abs(totals.balance))}
-                  <span className="text-xs font-normal ml-1">
-                    {totals.balance >= 0 ? "Rcv" : "Pay"}
-                  </span>
                 </p>
               </Card>
             </div>
@@ -231,7 +287,7 @@ const PartyStatement = () => {
               <Card className="p-8 text-center">
                 <div className="animate-pulse text-muted-foreground">Loading transactions...</div>
               </Card>
-            ) : transactions.length === 0 ? (
+            ) : transactionsWithBalance.length === 0 ? (
               <Card className="p-8 text-center">
                 <Calendar className="h-10 w-10 text-muted-foreground mx-auto mb-2" />
                 <p className="text-muted-foreground">No transactions found</p>
@@ -241,7 +297,25 @@ const PartyStatement = () => {
               </Card>
             ) : (
               <div className="space-y-2">
-                {transactions.map((transaction) => (
+                {/* Opening Balance Row */}
+                {selectedParty && (
+                  <Card className="p-3 bg-muted/30 border-dashed">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Scale className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm font-medium text-muted-foreground">Opening Balance</span>
+                      </div>
+                      <p className={`font-semibold ${(selectedParty.opening_balance || 0) >= 0 ? "text-green-600" : "text-red-600"}`}>
+                        {formatCurrency(Math.abs(selectedParty.opening_balance || 0))}
+                        <span className="text-xs font-normal ml-1">
+                          {(selectedParty.opening_balance || 0) >= 0 ? "Rcv" : "Pay"}
+                        </span>
+                      </p>
+                    </div>
+                  </Card>
+                )}
+
+                {transactionsWithBalance.map((transaction) => (
                   <Card key={transaction.id} className="p-3">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
@@ -270,20 +344,15 @@ const PartyStatement = () => {
                       </div>
                       <div className="text-right">
                         <p className={`font-semibold ${getTransactionTypeColor(transaction.transaction_type)}`}>
-                          {getTransactionTypeColor(transaction.transaction_type) === "text-green-600" ? "+" : "-"}
-                          {formatCurrency(transaction.total_amount)}
+                          {transaction.balanceChange >= 0 ? "+" : "-"}
+                          {formatCurrency(Math.abs(transaction.total_amount))}
                         </p>
-                        {transaction.payment_status && (
-                          <span className={`text-[10px] px-1.5 py-0.5 rounded ${
-                            transaction.payment_status === "paid"
-                              ? "bg-green-100 text-green-700"
-                              : transaction.payment_status === "partial"
-                              ? "bg-amber-100 text-amber-700"
-                              : "bg-red-100 text-red-700"
-                          }`}>
-                            {transaction.payment_status}
+                        <p className={`text-xs font-medium mt-1 ${transaction.runningBalance >= 0 ? "text-green-600" : "text-red-600"}`}>
+                          Bal: {formatCurrency(Math.abs(transaction.runningBalance))}
+                          <span className="text-[10px] ml-0.5">
+                            {transaction.runningBalance >= 0 ? "Rcv" : "Pay"}
                           </span>
-                        )}
+                        </p>
                       </div>
                     </div>
                   </Card>
