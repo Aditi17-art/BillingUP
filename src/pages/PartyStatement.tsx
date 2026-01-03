@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { MobileLayout } from "@/components/layout/MobileLayout";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,7 @@ import { ArrowLeft, Search, Filter, Download, Calendar, TrendingUp, TrendingDown
 import { useParties } from "@/hooks/useParties";
 import { usePartyTransactions, calculatePartyTotals } from "@/hooks/usePartyTransactions";
 import { TransactionType, Transaction } from "@/hooks/useTransactions";
-import { format } from "date-fns";
+import { format, startOfMonth, endOfMonth, subMonths, startOfQuarter, endOfQuarter, startOfYear, endOfYear, subQuarters, subYears } from "date-fns";
 
 const transactionTypeLabels: Record<TransactionType, string> = {
   sale_invoice: "Sale Invoice",
@@ -36,6 +36,30 @@ const PartyStatement = () => {
   const [transactionTypeFilter, setTransactionTypeFilter] = useState<TransactionType | "all">("all");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [activePreset, setActivePreset] = useState<string | null>(null);
+
+  const today = new Date();
+
+  const datePresets = useMemo(() => [
+    { label: "This Month", start: startOfMonth(today), end: endOfMonth(today) },
+    { label: "Last Month", start: startOfMonth(subMonths(today, 1)), end: endOfMonth(subMonths(today, 1)) },
+    { label: "This Quarter", start: startOfQuarter(today), end: endOfQuarter(today) },
+    { label: "Last Quarter", start: startOfQuarter(subQuarters(today, 1)), end: endOfQuarter(subQuarters(today, 1)) },
+    { label: "This Year", start: startOfYear(today), end: endOfYear(today) },
+    { label: "Last Year", start: startOfYear(subYears(today, 1)), end: endOfYear(subYears(today, 1)) },
+  ], []);
+
+  const applyPreset = useCallback((preset: { label: string; start: Date; end: Date }) => {
+    setStartDate(format(preset.start, "yyyy-MM-dd"));
+    setEndDate(format(preset.end, "yyyy-MM-dd"));
+    setActivePreset(preset.label);
+  }, []);
+
+  const clearDateFilter = useCallback(() => {
+    setStartDate("");
+    setEndDate("");
+    setActivePreset(null);
+  }, []);
 
   const selectedParty = useMemo(
     () => parties.find((p) => p.id === selectedPartyId),
@@ -136,6 +160,32 @@ const PartyStatement = () => {
               <Filter className="h-4 w-4" />
               Filters
             </div>
+
+            {/* Date Range Presets */}
+            <div>
+              <label className="text-xs text-muted-foreground mb-2 block">Quick Select</label>
+              <div className="flex flex-wrap gap-2">
+                {datePresets.map((preset) => (
+                  <Button
+                    key={preset.label}
+                    variant={activePreset === preset.label ? "default" : "outline"}
+                    size="sm"
+                    className="text-xs h-7"
+                    onClick={() => applyPreset(preset)}
+                  >
+                    {preset.label}
+                  </Button>
+                ))}
+                <Button
+                  variant={activePreset === null && !startDate && !endDate ? "default" : "outline"}
+                  size="sm"
+                  className="text-xs h-7"
+                  onClick={clearDateFilter}
+                >
+                  All Time
+                </Button>
+              </div>
+            </div>
             
             <div className="grid grid-cols-2 gap-3">
               <div>
@@ -143,7 +193,10 @@ const PartyStatement = () => {
                 <Input
                   type="date"
                   value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
+                  onChange={(e) => {
+                    setStartDate(e.target.value);
+                    setActivePreset(null);
+                  }}
                   className="mt-1"
                 />
               </div>
@@ -152,7 +205,10 @@ const PartyStatement = () => {
                 <Input
                   type="date"
                   value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
+                  onChange={(e) => {
+                    setEndDate(e.target.value);
+                    setActivePreset(null);
+                  }}
                   className="mt-1"
                 />
               </div>
