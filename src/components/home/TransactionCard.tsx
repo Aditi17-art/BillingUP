@@ -1,4 +1,4 @@
-import { Download, Share2, MoreVertical, Trash2 } from "lucide-react";
+import { Download, Share2, MoreVertical, Trash2, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import jsPDF from "jspdf";
@@ -22,7 +22,8 @@ export interface Transaction {
 interface TransactionCardProps {
   transaction: Transaction;
   className?: string;
-  onDelete?: (id: string) => void; // delete handler
+  onDelete?: (id: string) => void;
+  onEdit?: (id: string) => void;
 }
 
 const typeStyles = {
@@ -43,6 +44,7 @@ export const TransactionCard = ({
   transaction,
   className,
   onDelete,
+  onEdit,
 }: TransactionCardProps) => {
   /* 🔽 DOWNLOAD PDF */
   const handleDownload = () => {
@@ -123,6 +125,12 @@ Balance: ${formatCurrency(transaction.balanceDue)}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
+            <DropdownMenuItem
+              className="gap-2"
+              onClick={() => onEdit?.(transaction.id)}>
+              <Pencil className="w-4 h-4" />
+              Edit
+            </DropdownMenuItem>
             <DropdownMenuItem
               className="text-destructive gap-2"
               onClick={handleDelete}>
